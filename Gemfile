@@ -4,6 +4,10 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.6'
 
 gem 'rails',      '6.1.3'
+gem 'cloudinary', '~> 1.16.0'
+gem 'image_processing',           '1.9.3'
+gem 'mini_magick',                '4.9.5'
+gem 'active_storage_validations', '0.8.9'
 gem 'bcrypt',         '3.1.13'
 gem 'faker',          '2.11.0'
 gem 'will_paginate',           '3.3.0'
@@ -19,6 +23,7 @@ gem 'bootsnap',   '1.4.6', require: false
 group :development, :test do
   gem 'sqlite3', '1.4.2'
   gem 'byebug',  '11.1.3', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'dotenv-rails'
 end
 
 group :development do
