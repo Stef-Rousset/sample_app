@@ -10,6 +10,16 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
   has_secure_password
   has_many :microposts, dependent: :destroy
+  # Calvin suit Hobbes
+  has_many :active_relationships, class_name: "Relationship",
+                                  foreign_key: "follower_id",
+                                  dependent: :destroy
+  has_many :following, through: :active_relationships, source: :followed
+  # Hobbes est suivi par Calvin
+  has_many :passive_relationships, class_name: "Relationship",
+                                    foreign_key: "followed_id",
+                                    dependent: :destroy
+  has_many :followers, through: :passive_relationships, source: :follower
 
   # Returns the hash digest of the given string
   def self.digest(string)
@@ -73,7 +83,23 @@ class User < ApplicationRecord
 
   # Defines a proto-feed
   def feed
-    Micropost.where("user_id= ?", id)
+    following_ids = "SELECT followed_id FROM relationships
+                     WHERE  follower_id = :user_id"
+    Micropost.where("user_id IN (#{following_ids})
+                     OR user_id = :user_id", user_id: id).includes(:user, image_attachment: :blob)
+  end
+
+  # Follow, unfollow and following? user
+  def follow(other_user)
+    following << other_user unless self == other_user
+  end
+
+  def unfollow(other_user)
+    following.delete(other_user)
+  end
+
+  def following?(other_user)
+    following.include?(other_user)
   end
 
   private

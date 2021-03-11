@@ -6,25 +6,24 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-
 puts "create a main user"
 
 User.create!(name: "Example user", email: "example@railstutorial.org",
-            password: "foobar", password_confirmation: "foobar",
-            admin: true, activated: true, activated_at: Time.zone.now)
-
+             password: "foobar", password_confirmation: "foobar",
+             admin: true, activated: true, activated_at: Time.zone.now)
 puts "main user done"
 
 puts "create 90 additionals users"
 90.times do |number|
   name = Faker::Name.name
-  email = "example-#{number+1}@railstutorial.org"
+  email = "example-#{number + 1}@railstutorial.org"
   password = 'password'
   User.create!(name: name, email: email, password: password,
                password_confirmation: password, activated: true,
                activated_at: Time.zone.now)
 end
 puts "additionals users done"
+
 puts "creating microposts"
 users = User.order(:created_at).take(6)
 50.times do
@@ -32,3 +31,12 @@ users = User.order(:created_at).take(6)
   users.each { |user| user.microposts.create!(content: content) }
 end
 puts "microposts done"
+
+puts "create following relationships"
+users = User.all
+user  = users.first
+following = users[2..50]
+followers = users[3..40]
+following.each { |followed| user.follow(followed) }
+followers.each { |follower| follower.follow(user) }
+puts "following relationships done"
